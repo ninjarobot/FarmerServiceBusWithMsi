@@ -32,7 +32,6 @@ let sbAppRole = {
 
 // Load an F# script that uses the dotnet 5.0 fsi to load necessary libraries to connect to the service bus.
 let script = System.IO.File.ReadAllText "main.fsx"
-printfn "%s" script
 
 // Create a container group that runs the dotnet fsi script and runs under the managed identity with service bus access.
 let sbApp = containerGroup {
@@ -41,7 +40,7 @@ let sbApp = containerGroup {
     add_instances [
         containerInstance {
             name "fsi"
-            image "mcr.microsoft.com/dotnet/sdk:5.0.102"
+            image "mcr.microsoft.com/dotnet/sdk:5.0.103"
             add_volume_mount "script-source" "/app/src"
             command_line ("dotnet fsi /app/src/main.fsx".Split null |> List.ofArray)
         }

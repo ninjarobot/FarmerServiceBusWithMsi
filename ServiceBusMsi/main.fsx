@@ -1,13 +1,14 @@
-#r "nuget: Microsoft.Azure.ServiceBus"
+#r "nuget: Azure.Messaging.ServiceBus"
+#r "nuget: Azure.Identity, 1.3.0"
 
-open Microsoft.Azure.ServiceBus
-open Microsoft.Azure.ServiceBus.Primitives
+open Azure.Identity
+open Azure.Messaging.ServiceBus
 
 let connectAndPublish (endpoint:string) =
-    let topicClient = TopicClient(endpoint, "foo", ManagedIdentityTokenProvider())
-    let msg = Message(sprintf "Hello %O" System.DateTime.Now |> System.Text.Encoding.UTF8.GetBytes )
+    let sbClient = ServiceBusClient(endpoint, DefaultAzureCredential())
+    let msg = ServiceBusMessage($"Hello {System.DateTime.Now}")
     msg.ContentType <- "text/plain"
-    topicClient.SendAsync msg |> Async.AwaitTask |> Async.RunSynchronously
+    sbClient.CreateSender("foo").SendMessageAsync msg |> Async.AwaitTask |> Async.RunSynchronously
 
 while true do
     try
